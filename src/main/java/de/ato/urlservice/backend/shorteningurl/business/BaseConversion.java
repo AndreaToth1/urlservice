@@ -13,7 +13,8 @@ public class BaseConversion {
         String shortUrl = input.substring(0,input.lastIndexOf("."));
         shortUrl = shortUrl.substring(0, shortUrl.length() -2)
                 + "." + shortUrl.substring(shortUrl.length() -2, shortUrl.length()) + "/";
-        return shortUrl +=  input.hashCode();
+        String hash = String.valueOf(Math.abs(input.hashCode())).substring(0,6);
+        return shortUrl +=   hash;
     }
 
 }
