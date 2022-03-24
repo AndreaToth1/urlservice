@@ -1,7 +1,8 @@
-package de.ato.urlservice.backend.shortening.repository;
+package de.ato.urlservice.backend.shorteningurl.repository;
 
-import de.ato.urlservice.backend.shortening.model.Url;
+import de.ato.urlservice.backend.shorteningurl.model.Url;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface UrlRepository extends JpaRepository<Url, Long> {
+    Url findByOriginalUrl(String originalUrl);
 }

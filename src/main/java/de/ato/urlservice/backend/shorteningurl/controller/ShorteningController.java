@@ -1,7 +1,85 @@
-package de.ato.urlservice.backend.shortening.controller;
+package de.ato.urlservice.backend.shorteningurl.controller;
 
+import de.ato.urlservice.backend.common.exceptions.UrlNotFoundException;
+import de.ato.urlservice.backend.common.exceptions.UrlNotValidException;
+import de.ato.urlservice.backend.shorteningurl.business.ShorteningService;
+import de.ato.urlservice.backend.shorteningurl.model.Url;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.*;
+
+import java.net.URI;
+import java.util.regex.Pattern;
+
+@Validated
+@RestController
+@RequestMapping("/shortening")
 public class ShorteningController {
 
+    private static Logger log = LogManager.getLogger();
+
+    @Autowired
+    ShorteningService shorteningService;
+
+    @GetMapping
+    public Url convertToShortenUrl(
+            @RequestParam(name = "url", required = true)
+            String url) throws UrlNotValidException {
+
+        if(!validateUrl(url)){
+            throw new UrlNotValidException("Url not valid: " + url);
+        }
+
+        //ToDo check if there is any in repro
+        Url existingUrl = shorteningService.findByName(url);
+        if(existingUrl != null){
+            return existingUrl;
+        }
+
+        return shorteningService.shorten(Url.builder()
+                .originalUrl(url)
+                .build());
+    }
+
+    @GetMapping(value = "{shortUrl}")
+    public ResponseEntity<Void> getAndRedirect(@PathVariable String shortUrl) throws UrlNotFoundException {
+
+        Url url = shorteningService.findByName(shortUrl);
+        if(url == null)
+            throw new UrlNotFoundException("Url not found");
+
+        return ResponseEntity.status(HttpStatus.FOUND)
+                .location(URI.create(url.getOriginalUrl()))
+                .build();
+    }
+
+    private boolean validateUrl(String url) {
+
+        if(url == null){
+            return false;
+        }
+
+        // Regex of valid url
+        String regex = "((http|https)://)(www.)?"
+                + "[a-zA-Z0-9@:%._\\+~#?&//=]"
+                + "{2,256}\\.[a-z]"
+                + "{2,6}\\b([-a-zA-Z0-9@:%"
+                + "._\\+~#?&//=]*)";
+
+        Pattern p = null;
+        try {
+            p = Pattern.compile(regex);
+        } catch (Exception e) {
+            log.error("Error, pattern ist not valid: " + regex, e);
+            return false;
+        }
+
+        return p.matcher(url).matches();
+    }
 
 
 }

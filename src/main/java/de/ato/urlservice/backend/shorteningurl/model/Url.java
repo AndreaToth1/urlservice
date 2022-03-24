@@ -1,4 +1,4 @@
-package de.ato.urlservice.backend.shortening.model;
+package de.ato.urlservice.backend.shorteningurl.model;
 
 import lombok.*;
 
@@ -10,6 +10,7 @@ import javax.persistence.Id;
 @Setter
 @Entity
 @Builder
+@ToString
 public class Url {
 
     @Id @GeneratedValue

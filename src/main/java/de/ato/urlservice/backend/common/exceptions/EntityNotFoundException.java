@@ -3,13 +3,13 @@ package de.ato.urlservice.backend.common.exceptions;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
-@ResponseStatus(code = HttpStatus.BAD_REQUEST, reason = "Url not valid")
-public class UrlNotValidException extends Exception{
-    public UrlNotValidException(String message) {
+@ResponseStatus(code = HttpStatus.NOT_FOUND, reason = "Entity not found")
+public class EntityNotFoundException extends Exception{
+    public EntityNotFoundException(String message) {
         super(message);
     }
 
-    public UrlNotValidException(String message, Throwable cause) {
+    public EntityNotFoundException(String message, Throwable cause) {
         super(message, cause);
     }
 }
