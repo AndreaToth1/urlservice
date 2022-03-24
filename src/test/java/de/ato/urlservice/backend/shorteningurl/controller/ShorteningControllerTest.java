@@ -1,7 +1,6 @@
 package de.ato.urlservice.backend.shorteningurl.controller;
 
 import de.ato.urlservice.backend.BackendApplication;
-import de.ato.urlservice.backend.shorteningurl.business.ShorteningService;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,33 +29,34 @@ class ShorteningControllerTest {
     @Autowired
     private MockMvc mvc;
 
-    @Autowired
-    private ShorteningService shorteningService;
-
-
-    @Test
-    void contextLoads() {
-    }
-
     @Test
     void shortenUrl() throws Exception {
 
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.get(URI)
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post(URI)
                         .param("url", "https://www.google.com")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.shortenUrl").exists())
                 .andReturn();
-       String content = result.getResponse().getContentAsString();
     }
 
     @Test
     void shortenUrlInvalid() throws Exception {
 
-        MvcResult result = mvc.perform(MockMvcRequestBuilders.get(URI)
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.post(URI)
                         .param("url", "https://www.googl[e.com")
                         .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isBadRequest())
+                .andReturn();
+    }
+
+    @Test
+    void redirectUrl() throws Exception {
+
+        MvcResult result = mvc.perform(MockMvcRequestBuilders.get(URI)
+                        .param("shorturl", "https://www.goog.le/-1632447086")
+                        .accept(MediaType.APPLICATION_JSON))
+                .andExpect(status().is3xxRedirection())
                 .andReturn();
     }
 

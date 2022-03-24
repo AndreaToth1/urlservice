@@ -26,6 +26,12 @@ public class LoadDatabase {
                             .originalUrl("http://www.daimler.com/karriere/jobsuche/")
                             .build()));
 
+            log.info("Preloading " + repository.save(
+                    Url.builder()
+                            .originalUrl("https://www.google.com/xyz/")
+                            .shortenUrl("https://www.goog.le/-1632447086")
+                            .build()));
+
         };
     }
 }

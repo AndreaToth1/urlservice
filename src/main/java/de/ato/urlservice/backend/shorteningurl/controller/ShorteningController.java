@@ -25,7 +25,7 @@ public class ShorteningController {
     @Autowired
     ShorteningService shorteningService;
 
-    @GetMapping
+    @PostMapping
     public Url convertToShortenUrl(
             @RequestParam(name = "url", required = true)
             String url) throws UrlNotValidException {
@@ -45,15 +45,15 @@ public class ShorteningController {
                 .build());
     }
 
-    @GetMapping(value = "{shortUrl}")
-    public ResponseEntity<Void> getAndRedirect(@PathVariable String shortUrl) throws UrlNotFoundException {
+    @GetMapping()
+    public ResponseEntity<Void> getAndRedirect( @RequestParam(name = "shorturl", required = true) String shorturl) throws UrlNotFoundException {
 
-        Url url = shorteningService.findByName(shortUrl);
-        if(url == null)
-            throw new UrlNotFoundException("Url not found");
+        if(shorturl == null){
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+        }
 
         return ResponseEntity.status(HttpStatus.FOUND)
-                .location(URI.create(url.getOriginalUrl()))
+                .location(URI.create(shorturl))
                 .build();
     }
 
